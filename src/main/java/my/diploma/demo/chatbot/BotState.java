@@ -52,7 +52,7 @@ public enum BotState {
 
         @Override
         public void handleInput(BotContext context) {
-            next = Requisite;
+            next = Bookkeeper;
         }
 
         @Override
@@ -61,23 +61,6 @@ public enum BotState {
         }
     },
 
-    Requisite {
-        @Override
-        public void enter(BotContext context) {
-            sendMessage(context, "Enter your Name please:");
-        }
-
-        @Override
-        public void handleInput(BotContext context) {
-            context.getBookkeeper().setRequisite(context.getInput());
-        }
-
-
-        @Override
-        public BotState nextState() {
-            return Bookkeeper;
-        }
-    },
 
     Bookkeeper {
         private BotState next;

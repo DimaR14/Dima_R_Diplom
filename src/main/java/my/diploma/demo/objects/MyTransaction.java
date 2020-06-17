@@ -3,9 +3,8 @@ package my.diploma.demo.objects;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import javax.persistence.*;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
+
 
 @Entity
 public class MyTransaction {

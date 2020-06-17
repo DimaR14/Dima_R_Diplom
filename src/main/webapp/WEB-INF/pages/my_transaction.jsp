@@ -7,6 +7,11 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
     <style>
+
+        body{
+            background: url("https://thumbs.dreamstime.com/b/vector-seamless-pattern-business-money-icons-image-consisting-finance-use-as-background-59853064.jpg");
+        }
+
         table {
             font-size: 25px;
         }
@@ -32,14 +37,37 @@
             color: white;
             outline: none;
         }
+        #title {
+            float: none;
+            margin-bottom: 50px;
+
+        }
+
+        #title a {
+            color: black;
+            font-size: 20px;
+        }
     </style>
 </head>
 <body>
 
 <button type="button" id="delete_transaction" class="btn btn-default navbar-btn">Delete</button>
 
+<ul id="title" class="nav navbar-nav">
+    <li class="dropdown">
+        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
+           aria-expanded="false">Choose title <span class="caret"></span></a>
+        <ul class="dropdown-menu">
+            <li><a href="/title/all">All</a></li>
+            <c:forEach items="${title}" var="title">
+                <li><a href="/title/${title.name}">${title.name}</a></li>
+            </c:forEach>
+        </ul>
+    </li>
+</ul>
+
 <div class="container">
-    <table class="table table-striped">
+    <table class="table">
         <thead>
         <tr>
             <td></td>
@@ -63,6 +91,9 @@
     </table>
 </div>
 <script>
+
+    $('.dropdown-toggle').dropdown();
+
     $('#delete_transaction').click(function(){
         var data = { 'toDelete[]' : []};
         $(":checked").each(function() {

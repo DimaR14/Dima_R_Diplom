@@ -7,6 +7,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>Transaction</title>
     <style>
+
+        body{
+            background: url("https://thumbs.dreamstime.com/b/vector-seamless-pattern-business-money-icons-image-consisting-finance-use-as-background-59853064.jpg");
+        }
+
         form {
             width: 300px;
             margin: 0 auto;
@@ -16,6 +21,14 @@
         }
 
         form input {
+            width: 100%;
+            line-height: 40px;
+            font-size: 20px;
+            padding-left: 15px;
+            margin: 9px 0;
+        }
+
+        form select{
             width: 100%;
             line-height: 40px;
             font-size: 20px;
@@ -34,6 +47,14 @@
 </head>
 <body>
 <form action="/add_transaction" method="POST">
+    <br/>
+    Bookkeeper:<br/>
+    <select class="selectpicker form-control form-select-button" name="bookkeeper" required>
+        <c:forEach items="${bookkeeper}" var="bookkeeper">
+            <option value="${bookkeeper.id}">${bookkeeper.requisite}</option>
+        </c:forEach>
+    </select>
+    <br/>
     Sum:<br/><input type="text" name="sum"><br/>
     Date:<br/><input type="date" name="date"><br/>
     Attribute:<br/><input type="text" name="attribute"><br/>
@@ -43,8 +64,16 @@
     <c:if test="${error==true}">
         <p>Enter sum and attribute please...</p>
     </c:if>
+
+    <c:if test="${wrong==true}">
+        <p>Incorrect input of the sum...</p>
+    </c:if>
+
 </form>
 
+<script>
+    $('.selectpicker').selectpicker();
+</script>
 
 </body>
 </html>

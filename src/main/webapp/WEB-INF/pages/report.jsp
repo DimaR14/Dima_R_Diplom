@@ -10,6 +10,11 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
 
     <style>
+
+        body{
+            background: url("https://thumbs.dreamstime.com/b/vector-seamless-pattern-business-money-icons-image-consisting-finance-use-as-background-59853064.jpg");
+        }
+
         #tables, #info {
             display: flex;
             justify-content: space-around;
@@ -17,7 +22,7 @@
 
         #tables .tableWrapper, #info div {
             width: 40%;
-            border-top: 5px solid #ddd;
+            border-top: 5px solid #FAF0E6;
 
         }
 
@@ -47,7 +52,7 @@
             position: absolute;
             height: 100%;
             width: 1px;
-            border-right: 5px solid #dddddd;
+            border-right: 5px solid #FAF0E6;
             top: 0;
         }
 
@@ -81,7 +86,7 @@
 
 <div id="tables">
     <div class="tableWrapper">
-        <table class="table table-striped">
+        <table class="table">
             <thead>
             <tr>
                 <td><b>Title</b></td>
@@ -101,7 +106,7 @@
 
 
     <div class="tableWrapper">
-        <table class="table table-striped">
+        <table class="table">
             <thead>
             <tr>
                 <td><b>Title</b></td>

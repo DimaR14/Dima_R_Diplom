@@ -13,5 +13,13 @@ public interface MyTransactionRepository extends JpaRepository<MyTransaction,Lon
 
     @Query("SELECT m FROM MyTransaction m WHERE m.id = :id")
     MyTransaction findById(@Param("id")long id);
+
+    @Query("SELECT m FROM MyTransaction m WHERE m.bookkeeper.id = :bookkeeper_id")
+    List<MyTransaction> getAllTransactionByBookkeeper(@Param("bookkeeper_id")long bookkeeper_id);
+
+    @Query("SELECT m FROM MyTransaction m WHERE m.title = :title AND m.bookkeeper.user.id = :user_id")
+    List<MyTransaction> getAllByTitleAndUser(@Param("title")String title,
+                                             @Param("user_id")long user_id);
+
 }
 

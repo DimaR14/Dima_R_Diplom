@@ -17,7 +17,7 @@ public class User {
     private  double balance;
     private String telegramToken;
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "user")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "user",fetch = FetchType.EAGER)
     private List<Bookkeeper> bookkeepers = new ArrayList<>();
 
     @OneToMany (cascade = CascadeType.ALL)
@@ -33,10 +33,6 @@ public class User {
     public void addBookkeeper(Bookkeeper bookkeeper){
         bookkeeper.setUser(this);
         bookkeepers.add(bookkeeper);
-    }
-
-    public void addBalance(Bookkeeper bookkeeper){
-            this.balance = this.balance + bookkeeper.getBalance();
     }
 
     public long getId() {

@@ -34,4 +34,5 @@ public class TitleService {
 
     @Transactional
     public List<Title> getAllByUser(long user_id){return titleRepository.getAllByUser(user_id);}
+
 }

@@ -17,10 +17,12 @@ public class Bookkeeper {
 
     private String requisite;
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "bookkeeper",fetch = FetchType.EAGER)
+    @OneToMany(cascade = CascadeType.ALL ,mappedBy = "bookkeeper",fetch = FetchType.EAGER)
     private List<MyTransaction> transactions = new ArrayList<>();
 
     private double balance;
+
+    private String telegramToken;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
@@ -31,6 +33,11 @@ public class Bookkeeper {
     public Bookkeeper(long chatId, int stateId){
         this.chatId = chatId;
         this.stateId = stateId;
+    }
+
+    public Bookkeeper(String requisite, String telegramToken){
+        this.requisite = requisite;
+        this.telegramToken = telegramToken;
     }
 
     public void addTransaction(MyTransaction transaction){
@@ -84,6 +91,14 @@ public class Bookkeeper {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public String getTelegramToken() {
+        return telegramToken;
+    }
+
+    public void setTelegramToken(String telegramToken) {
+        this.telegramToken = telegramToken;
     }
 
     public long getChatId() {

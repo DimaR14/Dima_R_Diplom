@@ -22,13 +22,11 @@ public class BookkeeperService {
     }
 
     @Transactional
+    public Bookkeeper findById(long id){ return bookkeeperRepository.findById(id);}
+
+    @Transactional
     public Bookkeeper findByChatId(long id) {
         return bookkeeperRepository.findByChatId(id);
-    }
-
-    @Transactional(readOnly = true)
-    public Bookkeeper findByRequisite(String requisite) {
-        return bookkeeperRepository.findByRequisite(requisite);
     }
 
 
@@ -39,18 +37,13 @@ public class BookkeeperService {
 
 
     @Transactional
-    public void deleteBookkeeper(String requisite) {
-        Bookkeeper bookkeeper = findByRequisite(requisite);
-        bookkeeperRepository.deleteById(bookkeeper.getId());
+    public void deleteBookkeeperById(long id) {
+        bookkeeperRepository.deleteById(id);
     }
 
     @Transactional
     public void addMyTransaction(MyTransaction transaction, Bookkeeper bookkeeper) {
         bookkeeper.addTransaction(transaction);
-     //   if (transaction.getAttribute().equals("+")) {
-      //      bookkeeper.setBalance(bookkeeper.getBalance() + transaction.getSum());
-      //  } else
-        //    bookkeeper.setBalance(bookkeeper.getBalance() - transaction.getSum());
         bookkeeperRepository.save(bookkeeper);
     }
 
@@ -78,6 +71,15 @@ public class BookkeeperService {
         return bookkeeperRepository.findByUser(user.getId());
     }
 
+    @Transactional
+    public boolean existsByTelegramTokenAndUser(String telegramToken,User user){
+        if(bookkeeperRepository.existsByTelegramTokenAndUser(telegramToken,user.getId())==false)
+            return false;
+        else return true;
+    }
+
+    @Transactional
+    public Bookkeeper findByTelegramToken(String telegramToken){return bookkeeperRepository.findByTelegramToken(telegramToken);}
 
 }
 

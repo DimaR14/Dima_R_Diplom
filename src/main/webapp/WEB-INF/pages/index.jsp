@@ -45,7 +45,6 @@
 <div id="info">
     <div>
         <h1>${login}</h1>
-        <p>Telegram Token: ${token}</p>
         <p id="balanceInfo">Your balance: ${balance}</p>
     </div>
 
@@ -60,6 +59,10 @@
         <ul id="groupList" class="nav navbar-nav">
             <li>
                 <button type="button" id="new_transaction" class="btn btn-default navbar-btn">Add Transaction
+                </button>
+            </li>
+            <li>
+                <button type="button" id="add_bookkeeper" class="btn btn-default navbar-btn">Add Bookkeeper
                 </button>
             </li>
             <li>
@@ -90,11 +93,16 @@
     </table>
 </div>
 
+
 <script>
     $('.dropdown-toggle').dropdown();
 
     $('#new_transaction').click(function () {
         window.location.href = '/transaction';
+    });
+
+    $('#add_bookkeeper').click(function () {
+        window.location.href = '/add_bookkeeper';
     });
 
     $('#report').click(function () {

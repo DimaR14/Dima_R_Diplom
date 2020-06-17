@@ -1,6 +1,7 @@
 package my.diploma.demo.service;
 
 import my.diploma.demo.objects.Bookkeeper;
+import my.diploma.demo.objects.MyTransaction;
 import my.diploma.demo.objects.User;
 import my.diploma.demo.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,14 +29,10 @@ public class UserService {
     public User findById (long id){return  userRepository.findById(id);}
 
     @Transactional
-    public boolean addUser(String login, String password,String telegramToken){
+    public boolean addUser(String login, String password){
         if(userRepository.existsByLogin(login))
             return false;
         User user = new User(login,passwordEncoder.encode(password));
-        user.setTelegramToken(telegramToken);
-        Bookkeeper bookkeeper = new Bookkeeper((long)(Math.random()*1000000) ,104);
-        bookkeeper.setRequisite("Home");
-        user.addBookkeeper(bookkeeper);
         userRepository.save(user);
 
         return true;
@@ -55,20 +52,6 @@ public class UserService {
     }
 
     @Transactional
-    public boolean checkTelegramToken(String telegramToken,String login){
-       if(userRepository.checkTelegramToken(telegramToken,login)==true)
-           return true;
-       else return false;
-    }
-
-    @Transactional
-    public void addBalance(Bookkeeper bookkeeper, String login){
-        User user = userRepository.findByLogin(login);
-        user.addBalance(bookkeeper);
-        userRepository.save(user);
-    }
-
-    @Transactional
     public void refresh(String login){
         User user = userRepository.findByLogin(login);
         double balance = 0;
@@ -78,11 +61,5 @@ public class UserService {
         user.setBalance(balance);
         userRepository.save(user);
     }
-
-    @Transactional
-    public void updateUser(User user) {
-        userRepository.save(user);
-    }
-
 
 }

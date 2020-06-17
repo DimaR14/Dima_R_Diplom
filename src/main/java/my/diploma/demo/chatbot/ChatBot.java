@@ -3,7 +3,9 @@ package my.diploma.demo.chatbot;
 import my.diploma.demo.objects.Bookkeeper;
 import my.diploma.demo.objects.MyTransaction;
 import my.diploma.demo.objects.Title;
+import my.diploma.demo.objects.User;
 import my.diploma.demo.service.BookkeeperService;
+import my.diploma.demo.service.MyTransactionService;
 import my.diploma.demo.service.TitleService;
 import my.diploma.demo.service.UserService;
 import org.apache.logging.log4j.LogManager;
@@ -37,11 +39,13 @@ public class ChatBot extends TelegramLongPollingBot {
     private final BookkeeperService bookkeeperService;
     private final UserService userService;
     private final TitleService titleService;
+    private final MyTransactionService myTransactionService;
 
-    public ChatBot(BookkeeperService bookkeeperService, UserService userService, TitleService titleService) {
+    public ChatBot(BookkeeperService bookkeeperService, UserService userService, TitleService titleService,MyTransactionService myTransactionService) {
         this.bookkeeperService = bookkeeperService;
         this.userService = userService;
         this.titleService = titleService;
+        this.myTransactionService = myTransactionService;
     }
 
     @Override
@@ -62,7 +66,7 @@ public class ChatBot extends TelegramLongPollingBot {
         final String text = update.getMessage().getText();
         final long chatId = update.getMessage().getChatId();
 
-        Bookkeeper bookkeeper = bookkeeperService.findByChatId(chatId);
+        Bookkeeper bookkeeper  = bookkeeperService.findByChatId(chatId);
 
         if (checkIfCommand(bookkeeper, text))
             return;
@@ -91,7 +95,6 @@ public class ChatBot extends TelegramLongPollingBot {
             String login = context.getInput();
             if (userService.existsByLogin(login) == true) {
                 bookkeeper.setUser(userService.findByLogin(login));
-                bookkeeperService.updateBookkeeper(bookkeeper);
             } else {
                 sendMessage(chatId, "Wrong Login");
                 return;
@@ -99,7 +102,24 @@ public class ChatBot extends TelegramLongPollingBot {
         }
 
         if (state.equals(state.byId(2))) {
-            if (userService.checkTelegramToken(context.getInput(), bookkeeper.getUser().getLogin()) == false) {
+            if (bookkeeperService.existsByTelegramTokenAndUser(context.getInput(),bookkeeper.getUser()) == true) {
+                Bookkeeper bookkeeper1 = bookkeeperService.findByTelegramToken(context.getInput());
+                List<MyTransaction> myTransactionList = myTransactionService.getAllTransactionByBookkeeper(bookkeeper1);
+
+                for(MyTransaction transaction : myTransactionList){
+                    bookkeeperService.deleteMyTransaction(transaction,bookkeeper1);
+                    myTransactionService.deleteTransaction(transaction.getId());
+                }
+                for(MyTransaction transaction :myTransactionList){
+                   transaction.setBookkeeper(bookkeeper);
+                    bookkeeperService.addMyTransaction(transaction,bookkeeper);
+                }
+
+                bookkeeper.setRequisite(bookkeeper1.getRequisite());
+                bookkeeper.setTelegramToken(context.getInput());
+
+                bookkeeperService.deleteBookkeeperById(bookkeeper1.getId());
+
                 sendMessage(chatId, "ALL RIGHT!");
             } else {
                 sendMessage(chatId, "WRONG TOKEN");
@@ -107,7 +127,7 @@ public class ChatBot extends TelegramLongPollingBot {
             }
         }
 
-        if (state.equals(state.byId(4))) {
+        if (state.equals(state.byId(3))) {
             String tr = context.getInput();
             List<String> transaction;
             if (state.checkTransaction(tr) != null) {
@@ -130,12 +150,6 @@ public class ChatBot extends TelegramLongPollingBot {
             try {
                 MyTransaction myTransaction = new MyTransaction(title, date, transaction.get(0), Double.valueOf(transaction.get(1)));
                 bookkeeper.addTransaction(myTransaction);
-               // if (myTransaction.getAttribute().equals("+")) {
-             //       bookkeeper.setBalance(bookkeeper.getBalance() + myTransaction.getSum());
-             //   }
-             //   if (myTransaction.getAttribute().equals("-")) {
-             //       bookkeeper.setBalance(bookkeeper.getBalance() - myTransaction.getSum());
-             //   }
             } catch (NumberFormatException ex) {
                 sendMessage(chatId, "WRONG PARAMETERS");
                 return;

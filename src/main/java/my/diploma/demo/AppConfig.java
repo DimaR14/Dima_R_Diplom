@@ -9,6 +9,7 @@ import org.springframework.security.config.annotation.method.configuration.Globa
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+
 @Configuration
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class AppConfig extends GlobalMethodSecurityConfiguration {
@@ -25,7 +26,7 @@ public class AppConfig extends GlobalMethodSecurityConfiguration {
             @Override
             public void run(String... strings) throws Exception {
                 userService.addUser(
-                        "user","password","56125");
+                        "user","password");
             }
         };
     }

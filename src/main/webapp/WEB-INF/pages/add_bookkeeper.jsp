@@ -41,10 +41,10 @@
 
 <body>
 
-<form action="/register" method="POST">
-    Enter Login:<br/><input type="text" name="login"><br/>
-    Enter Password:<br/><input type="password" name="password"><br/>
-    <button type="submit">register</button>
+<form action="/add_bookkeeper" method="POST">
+    Enter Name:<br/><input type="text" name="name" required><br/>
+    Enter Telegram Token<br/><input type="text" name="token" required><br/>
+    <button type="submit">Add</button>
     <c:if test="${exists ne null}">
         <p>User already exists!</p>
     </c:if>

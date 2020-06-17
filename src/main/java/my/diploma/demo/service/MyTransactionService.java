@@ -1,5 +1,6 @@
 package my.diploma.demo.service;
 
+import my.diploma.demo.objects.Bookkeeper;
 import my.diploma.demo.objects.MyTransaction;
 import my.diploma.demo.objects.User;
 import my.diploma.demo.repository.MyTransactionRepository;
@@ -8,7 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
+
 
 @Service
 public class MyTransactionService {
@@ -28,6 +29,11 @@ public class MyTransactionService {
     public long count(){return myTransactionRepository.count();}
 
     @Transactional
+    public void deleteTransaction(long id){
+        myTransactionRepository.deleteById(id);
+    }
+
+    @Transactional
     public void deleteTransactions(long[] id_list){
         for(long id : id_list)
             myTransactionRepository.deleteById(id);
@@ -35,5 +41,15 @@ public class MyTransactionService {
 
     @Transactional
     public MyTransaction findById(long id){return myTransactionRepository.findById(id);}
+
+    @Transactional
+    public List<MyTransaction> getAllTransactionByBookkeeper(Bookkeeper bookkeeper){
+        return myTransactionRepository.getAllTransactionByBookkeeper(bookkeeper.getId());
+    }
+
+    @Transactional
+    public List<MyTransaction> getAllTransactionByTitleAndUser(String title, User user){
+        return myTransactionRepository.getAllByTitleAndUser(title,user.getId());
+    }
 
 }

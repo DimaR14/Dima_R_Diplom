@@ -6,6 +6,10 @@
     <meta charset="UTF-8">
 </head>
 <style>
+    body{
+        background: url("https://thumbs.dreamstime.com/b/vector-seamless-pattern-business-money-icons-image-consisting-finance-use-as-background-59853064.jpg");
+    }
+
     form {
         width: 300px;
         margin: 0 auto;
