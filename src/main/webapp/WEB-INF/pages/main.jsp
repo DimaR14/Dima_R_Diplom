@@ -37,7 +37,6 @@
     <div class="container-fluent">
         <div class="row">
             <div class="col align-self-start">
-                1
                 <h1>${login}</h1>
                 <p id="balanceInfo">               <svg class="bi bi-server" width="2em" height="2em" viewBox="0 0 25 25" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                     <path d="M13 2c0-1.105-2.239-2-5-2S3 .895 3 2s2.239 2 5 2 5-.895 5-2z"/>
@@ -47,7 +46,6 @@
                 </svg>Your balance: ${balance} ₴</p>
             </div>
             <div class="col-8 align-self-center">
-                2
                 <nav class="navbar navbar-expand-lg navbar-light bg-light">
                     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                         <span class="navbar-toggler-icon"></span>
@@ -93,15 +91,14 @@
                 <form action="/logout" method="post">
                     <button type="submit" value="Sign out..." class="btn btn-dark">Sign out...</button>
                 </form>
-                3
             </div>
         </div>
         <div class="row align-items-end">
             <div class="col align-self-end">
-                4
+
             </div>
             <div class="col-6 align-self-end">
-                5
+
                 <table class="table table-striped">
                     <thead>
                     <h1>Requisite</h1>
@@ -115,7 +112,7 @@
                 </table>
             </div>
             <div class="col align-self-end">
-                6
+
             </div>
         </div>
     </div>
