@@ -1,5 +1,6 @@
 package my.diploma.demo;
 
+import com.sun.xml.internal.messaging.saaj.packaging.mime.MessagingException;
 import my.diploma.demo.objects.*;
 import my.diploma.demo.service.UserService;
 import my.diploma.demo.service.MyTransactionService;
@@ -142,6 +143,7 @@ public class MyController {
         accountService.addAccount(login, password);
         return "login";
     }
+
 
     @RequestMapping("/my_transaction")
     public String MyTransaction(Model model) {

@@ -75,4 +75,9 @@ public class Account {
         this.users = users;
     }
 
+    public List<Title> getTitles() { return titles; }
+
+    public void setTitles(List<Title> titles) { this.titles = titles; }
+
+
 }

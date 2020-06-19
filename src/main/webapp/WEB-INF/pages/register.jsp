@@ -42,8 +42,8 @@
 <body>
 
 <form action="/register" method="POST">
-    Enter Login:<br/><input type="text" name="login"><br/>
-    Enter Password:<br/><input type="password" name="password"><br/>
+    Enter Login:<br/><input type="text" name="login" required><br/>
+    Enter Password:<br/><input type="password" name="password" required><br/>
     <button type="submit">register</button>
     <c:if test="${exists ne null}">
         <p>User already exists!</p>
