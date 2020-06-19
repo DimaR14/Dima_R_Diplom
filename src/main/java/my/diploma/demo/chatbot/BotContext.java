@@ -1,19 +1,19 @@
 package my.diploma.demo.chatbot;
 
-import my.diploma.demo.objects.Bookkeeper;
+import my.diploma.demo.objects.User;
 
 public class BotContext {
     private final ChatBot bot;
-    private final Bookkeeper bookkeeper;
+    private final User user;
     private final String input;
 
-    public static BotContext of(ChatBot bot, Bookkeeper bookkeeper, String text) {
-        return new BotContext(bot, bookkeeper, text);
+    public static BotContext of(ChatBot bot, User user, String text) {
+        return new BotContext(bot, user, text);
     }
 
-    private BotContext(ChatBot bot, Bookkeeper bookkeeper, String input) {
+    private BotContext(ChatBot bot, User user, String input) {
         this.bot = bot;
-        this.bookkeeper = bookkeeper;
+        this.user = user;
         this.input = input;
     }
 
@@ -21,8 +21,8 @@ public class BotContext {
         return bot;
     }
 
-    public Bookkeeper getBookkeeper() {
-        return bookkeeper;
+    public User getUser() {
+        return user;
     }
 
     public String getInput() {

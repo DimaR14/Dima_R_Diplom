@@ -1,10 +1,10 @@
 package my.diploma.demo;
 
 import my.diploma.demo.objects.*;
-import my.diploma.demo.service.BookkeeperService;
+import my.diploma.demo.service.UserService;
 import my.diploma.demo.service.MyTransactionService;
 import my.diploma.demo.service.TitleService;
-import my.diploma.demo.service.UserService;
+import my.diploma.demo.service.AccountService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,10 +25,10 @@ import java.util.List;
 public class MyController {
 
     @Autowired
-    private UserService userService;
+    private AccountService accountService;
 
     @Autowired
-    private BookkeeperService bookkeeperService;
+    private UserService userService;
 
     @Autowired
     private MyTransactionService myTransactionService;
@@ -46,9 +46,9 @@ public class MyController {
         return "main";
     }
 
-    @RequestMapping("/add_bookkeeper")
+    @RequestMapping("/add_user")
     public String addBookkeeper() {
-        return "add_bookkeeper";
+        return "add_user";
     }
 
     @RequestMapping("/register")
@@ -56,21 +56,16 @@ public class MyController {
         return "register";
     }
 
-    @RequestMapping("/index")
-    public String getIndex() {
-        return "index";
-    }
 
     @RequestMapping("/")
     public String index(Model model) throws ParseException {
 
-        User user = userService.findByLogin(getCurrentUser().getUsername());
-        List<Bookkeeper> bookkeepers = bookkeepersList(bookkeeperService.findByUser(user));
+        Account account = accountService.findByLogin(getCurrentUser().getUsername());
+        List<User> users = userList(userService.findByAccount(account));
 
-        model.addAttribute("token", user.getTelegramToken());
-        model.addAttribute("bookkeepers", bookkeepers);
+        model.addAttribute("users", users);
         model.addAttribute("login", getCurrentUser().getUsername());
-        model.addAttribute("balance", user.getBalance());
+        model.addAttribute("balance", account.getBalance());
 
         //return "index";
         return  "main";
@@ -79,35 +74,35 @@ public class MyController {
     @RequestMapping("/transaction")
     public String transaction(Model model) {
 
-        User user = userService.findByLogin(getCurrentUser().getUsername());
-        List<Bookkeeper> bookkeepers = bookkeepersList(bookkeeperService.findByUser(user));
+        Account account = accountService.findByLogin(getCurrentUser().getUsername());
+        List<User> users = userList(userService.findByAccount(account));
 
-        model.addAttribute("bookkeeper", bookkeepers);
+        model.addAttribute("users", users);
         return "transaction";
     }
 
-    @RequestMapping(value = "/add_bookkeeper", method = RequestMethod.POST)
+    @RequestMapping(value = "/add_user", method = RequestMethod.POST)
     public String newBookkeeper(Model model,
                                 @RequestParam String name,
                                 @RequestParam String token) {
-        if (bookkeeperService.findByTelegramToken(token) != null) {
+        if (userService.findByTelegramToken(token) != null) {
             model.addAttribute("exists", "Token already exists");
-            return "add_bookkeeper";
+            return "add_user";
         }
-        Bookkeeper bookkeeper = new Bookkeeper(name, token);
-        User user = userService.findByLogin(getCurrentUser().getUsername());
-        bookkeeper.setUser(user);
-        bookkeeperService.addBookkeeper(bookkeeper);
+        User user = new User(name, token);
+        Account account = accountService.findByLogin(getCurrentUser().getUsername());
+        user.setAccount(account);
+        userService.addUser(user);
         return "redirect:/";
     }
 
     @RequestMapping("/report")
     public String myReport(Model model) throws ParseException {
         String date = getNewDate(new Date());
-        User user = userService.findByLogin(getCurrentUser().getUsername());
-        HashMap<String, String> month = myMonth(myTransactionService.getAllTransactionFromUser(user));
-        List<MyTransaction> list = getAllForMonth(myTransactionService.getAllTransactionFromUser(user), date, "+");
-        List<MyTransaction> list2 = getAllForMonth(myTransactionService.getAllTransactionFromUser(user), date, "-");
+        Account account = accountService.findByLogin(getCurrentUser().getUsername());
+        HashMap<String, String> month = myMonth(myTransactionService.getAllTransactionFromAccount(account));
+        List<MyTransaction> list = getAllForMonth(myTransactionService.getAllTransactionFromAccount(account), date, "+");
+        List<MyTransaction> list2 = getAllForMonth(myTransactionService.getAllTransactionFromAccount(account), date, "-");
         double profit = sum(title(list), "+");
         double spend = sum(title(list2), "-");
         ;
@@ -122,10 +117,10 @@ public class MyController {
     @RequestMapping("/month/{key}")
     public String key(@PathVariable(value = "key") String key,
                       Model model) throws ParseException {
-        User user = userService.findByLogin(getCurrentUser().getUsername());
-        HashMap<String, String> month = myMonth(myTransactionService.getAllTransactionFromUser(user));
-        List<MyTransaction> list = getAllForMonth(myTransactionService.getAllTransactionFromUser(user), key, "+");
-        List<MyTransaction> list2 = getAllForMonth(myTransactionService.getAllTransactionFromUser(user), key, "-");
+        Account account = accountService.findByLogin(getCurrentUser().getUsername());
+        HashMap<String, String> month = myMonth(myTransactionService.getAllTransactionFromAccount(account));
+        List<MyTransaction> list = getAllForMonth(myTransactionService.getAllTransactionFromAccount(account), key, "+");
+        List<MyTransaction> list2 = getAllForMonth(myTransactionService.getAllTransactionFromAccount(account), key, "-");
         double profit = sum(title(list), "+");
         double spend = sum(title(list2), "-");
         model.addAttribute("months", month);
@@ -140,31 +135,31 @@ public class MyController {
     public String newUser(Model model,
                           @RequestParam String login,
                           @RequestParam String password) {
-        if (userService.findByLogin(login) != null) {
+        if (accountService.findByLogin(login) != null) {
             model.addAttribute("exists", true);
             return "register";
         }
-        userService.addUser(login, password);
+        accountService.addAccount(login, password);
         return "login";
     }
 
     @RequestMapping("/my_transaction")
     public String MyTransaction(Model model) {
-        User user = userService.findByLogin(getCurrentUser().getUsername());
-        List<Title> titles = getTitles(user);
+        Account account = accountService.findByLogin(getCurrentUser().getUsername());
+        List<Title> titles = getTitles(account);
         model.addAttribute("title", titles);
-        model.addAttribute("my_transaction", myTransactionService.getAllTransactionFromUser(user));
+        model.addAttribute("my_transaction", myTransactionService.getAllTransactionFromAccount(account));
         return "my_transaction";
     }
 
     @RequestMapping("/title/{name}")
     public String title(@PathVariable(value = "name") String name,
                         Model model) {
-        User user = userService.findByLogin(getCurrentUser().getUsername());
-        List<Title> titles = getTitles(user);
-        List<MyTransaction> transactionsFromTitle = myTransactionService.getAllTransactionByTitleAndUser(name,user);
+        Account account = accountService.findByLogin(getCurrentUser().getUsername());
+        List<Title> titles = getTitles(account);
+        List<MyTransaction> transactionsFromTitle = myTransactionService.getAllTransactionByTitleAndAccount(name, account);
         if(name.equals("all")){
-            transactionsFromTitle = myTransactionService.getAllTransactionFromUser(user);
+            transactionsFromTitle = myTransactionService.getAllTransactionFromAccount(account);
         }
         model.addAttribute("my_transaction", transactionsFromTitle);
         model.addAttribute("title", titles);
@@ -176,16 +171,16 @@ public class MyController {
                                  @RequestParam String sum,
                                  @RequestParam String attribute,
                                  @RequestParam String title,
-                                 @RequestParam(value = "bookkeeper") long bookkeeper_id,
+                                 @RequestParam(value = "user") long user_id,
                                  @RequestParam String date) throws ParseException {
-        User user = userService.findByLogin(getCurrentUser().getUsername());
+        Account account = accountService.findByLogin(getCurrentUser().getUsername());
         if (sum.isEmpty() || attribute.isEmpty()) {
             model.addAttribute("error", true);
-            model.addAttribute("bookkeeper",bookkeepersList(bookkeeperService.findByUser(user)));
+            model.addAttribute("user",userList(userService.findByAccount(account)));
             return "transaction";
         }
         if (checkSum(model, sum) == false) {
-            model.addAttribute("bookkeeper", bookkeepersList(bookkeeperService.findByUser(user)));
+            model.addAttribute("user", userList(userService.findByAccount(account)));
             return "transaction";
         }
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
@@ -203,15 +198,15 @@ public class MyController {
         } else {
             trTitle = title;
         }
-        Bookkeeper bookkeeper = bookkeeperService.findById(bookkeeper_id);
+        User user = userService.findById(user_id);
         MyTransaction myTransaction = new MyTransaction(trTitle, trDate, attribute, Double.valueOf(sum));
-        bookkeeperService.addMyTransaction(myTransaction, bookkeeper);
+        userService.addMyTransaction(myTransaction, user);
         Title userTitle = new Title(trTitle);
-        userTitle.setUser(bookkeeper.getUser());
-        if (titleService.existsByNameAndUser(userTitle.getName(), bookkeeper.getUser().getId()) == false) {
+        userTitle.setAccount(user.getAccount());
+        if (titleService.existsByNameAndAccount(userTitle.getName(), user.getAccount().getId()) == false) {
             titleService.addTitle(userTitle);
         }
-        userService.refresh(user.getLogin());
+        accountService.refresh(account.getLogin());
         return "redirect:/";
     }
 
@@ -221,16 +216,16 @@ public class MyController {
         if (toDelete != null && toDelete.length > 0)
             for (long id : toDelete) {
                 MyTransaction transaction = myTransactionService.findById(id);
-                Bookkeeper bookkeeper = transaction.getBookkeeper();
-                bookkeeperService.deleteMyTransaction(transaction, bookkeeper);
+                User user = transaction.getUser();
+                userService.deleteMyTransaction(transaction, user);
                 if (transaction.getAttribute().equals("+")) {
-                    bookkeeper.setBalance(bookkeeper.getBalance() - transaction.getSum());
+                    user.setBalance(user.getBalance() - transaction.getSum());
                 } else {
-                    bookkeeper.setBalance(bookkeeper.getBalance() + transaction.getSum());
+                    user.setBalance(user.getBalance() + transaction.getSum());
                 }
             }
         myTransactionService.deleteTransactions(toDelete);
-        userService.refresh(getCurrentUser().getUsername());
+        accountService.refresh(getCurrentUser().getUsername());
 
 
         return new ResponseEntity<>(HttpStatus.OK);
@@ -295,7 +290,7 @@ public class MyController {
 
     private List<Report> title(List<MyTransaction> list) {
         List<Report> reports = new ArrayList<>();
-        List<Title> list3 = titleService.getAllByUser(userService.findByLogin(getCurrentUser().getUsername()).getId());
+        List<Title> list3 = titleService.getAllByAccount(accountService.findByLogin(getCurrentUser().getUsername()).getId());
 
         for (Title title : list3) {
             reports.add(new Report(title.getName(), 0));
@@ -346,22 +341,22 @@ public class MyController {
         }
     }
 
-    private List<Bookkeeper> bookkeepersList(List<Bookkeeper> list) {
-        List<Bookkeeper> bookkeepers = new ArrayList<>();
-        for (Bookkeeper bookkeeper : list) {
-            if (bookkeeper.getTelegramToken() != null) {
-                bookkeepers.add(bookkeeper);
+    private List<User> userList(List<User> list) {
+        List<User> users = new ArrayList<>();
+        for (User user : list) {
+            if (user.getTelegramToken() != null) {
+                users.add(user);
             }
         }
-        return bookkeepers;
+        return users;
     }
 
 
-    private List<Title> getTitles(User user) {
+    private List<Title> getTitles(Account account) {
         List<Title> titles = new ArrayList<>();
-        List<Title> list = titleService.getAllByUser(user.getId());
+        List<Title> list = titleService.getAllByAccount(account.getId());
         for (Title title : list) {
-            if (!myTransactionService.getAllTransactionByTitleAndUser(title.getName(),user).isEmpty()) {
+            if (!myTransactionService.getAllTransactionByTitleAndAccount(title.getName(), account).isEmpty()) {
                 titles.add(title);
             }
         }

@@ -81,7 +81,7 @@
         <c:forEach items="${my_transaction}" var="my_transaction">
             <tr>
                 <td><input type="checkbox" name="toDelete[]" value="${my_transaction.id}" id="checkbox_${my_transaction.id}"/></td>
-                <td>${my_transaction.bookkeeper.requisite}</td>
+                <td>${my_transaction.user.requisite}</td>
                 <td>${my_transaction.date}</td>
                 <td>${my_transaction.attribute}</td>
                 <td>${my_transaction.sum}</td>

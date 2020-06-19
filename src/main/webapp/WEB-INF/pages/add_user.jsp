@@ -5,7 +5,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>Add Bookkeeper</title>
+    <title>Add User</title>
 
     <style>
         body{
@@ -41,7 +41,7 @@
 
 <body>
 
-<form action="/add_bookkeeper" method="POST">
+<form action="/add_user" method="POST">
     Enter Name:<br/><input type="text" name="name" required><br/>
     Enter Telegram Token<br/><input type="text" name="token" required><br/>
     <button type="submit">Add</button>

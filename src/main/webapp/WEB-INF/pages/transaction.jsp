@@ -49,9 +49,9 @@
 <form action="/add_transaction" method="POST">
     <br/>
     Bookkeeper:<br/>
-    <select class="selectpicker form-control form-select-button" name="bookkeeper" required>
-        <c:forEach items="${bookkeeper}" var="bookkeeper">
-            <option value="${bookkeeper.id}">${bookkeeper.requisite}</option>
+    <select class="selectpicker form-control form-select-button" name="user" required>
+        <c:forEach items="${users}" var="user">
+            <option value="${user.id}">${user.requisite}</option>
         </c:forEach>
     </select>
     <br/>

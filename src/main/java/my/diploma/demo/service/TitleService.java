@@ -21,8 +21,8 @@ public class TitleService {
 
 
     @Transactional
-    public boolean existsByNameAndUser(String name,long user_id){
-        if(titleRepository.existsByNameAndUser(name,user_id)==false)
+    public boolean existsByNameAndAccount(String name,long user_id){
+        if(titleRepository.existsByNameAndAccount(name,user_id)==false)
            return false;
         else return true;
     }
@@ -33,6 +33,6 @@ public class TitleService {
     }
 
     @Transactional
-    public List<Title> getAllByUser(long user_id){return titleRepository.getAllByUser(user_id);}
+    public List<Title> getAllByAccount(long user_id){return titleRepository.getAllByAccount(user_id);}
 
 }

@@ -1,6 +1,6 @@
 package my.diploma.demo;
 
-import my.diploma.demo.service.UserService;
+import my.diploma.demo.service.AccountService;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -20,12 +20,12 @@ public class AppConfig extends GlobalMethodSecurityConfiguration {
     }
 
     @Bean
-    public CommandLineRunner demo(final UserService userService,
+    public CommandLineRunner demo(final AccountService accountService,
                                   final PasswordEncoder encoder) {
         return new CommandLineRunner() {
             @Override
             public void run(String... strings) throws Exception {
-                userService.addUser(
+                accountService.addAccount(
                         "user","password");
             }
         };

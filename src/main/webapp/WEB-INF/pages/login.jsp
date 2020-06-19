@@ -39,7 +39,7 @@
     Password:<br/><input type="password" name="password"><br/>
     <button type="submit">login</button>
 
-    <p><a href="/register">Register new user</a></p>
+    <p><a href="/register">Register new account</a></p>
 
     <c:if test="${param.error ne null}">
         <p>Wrong login or password!</p>

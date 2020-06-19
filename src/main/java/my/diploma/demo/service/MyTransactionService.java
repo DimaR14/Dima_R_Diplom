@@ -1,8 +1,8 @@
 package my.diploma.demo.service;
 
-import my.diploma.demo.objects.Bookkeeper;
-import my.diploma.demo.objects.MyTransaction;
+import my.diploma.demo.objects.Account;
 import my.diploma.demo.objects.User;
+import my.diploma.demo.objects.MyTransaction;
 import my.diploma.demo.repository.MyTransactionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,8 +21,8 @@ public class MyTransactionService {
     public List<MyTransaction> getAllMyTransaction(){return myTransactionRepository.findAll();}
 
     @Transactional
-    public List<MyTransaction> getAllTransactionFromUser(User user){
-        return  myTransactionRepository.getAllTransaction(user.getId());
+    public List<MyTransaction> getAllTransactionFromAccount(Account account){
+        return  myTransactionRepository.getAllTransaction(account.getId());
     }
 
     @Transactional
@@ -43,13 +43,13 @@ public class MyTransactionService {
     public MyTransaction findById(long id){return myTransactionRepository.findById(id);}
 
     @Transactional
-    public List<MyTransaction> getAllTransactionByBookkeeper(Bookkeeper bookkeeper){
-        return myTransactionRepository.getAllTransactionByBookkeeper(bookkeeper.getId());
+    public List<MyTransaction> getAllTransactionByUser(User user){
+        return myTransactionRepository.getAllTransactionByUser(user.getId());
     }
 
     @Transactional
-    public List<MyTransaction> getAllTransactionByTitleAndUser(String title, User user){
-        return myTransactionRepository.getAllByTitleAndUser(title,user.getId());
+    public List<MyTransaction> getAllTransactionByTitleAndAccount(String title, Account account){
+        return myTransactionRepository.getAllByTitleAndAccount(title, account.getId());
     }
 
 }

@@ -1,13 +1,12 @@
 package my.diploma.demo.chatbot;
 
-import my.diploma.demo.objects.Bookkeeper;
+import my.diploma.demo.objects.User;
 import my.diploma.demo.objects.MyTransaction;
 import my.diploma.demo.objects.Title;
-import my.diploma.demo.objects.User;
-import my.diploma.demo.service.BookkeeperService;
+import my.diploma.demo.service.UserService;
 import my.diploma.demo.service.MyTransactionService;
 import my.diploma.demo.service.TitleService;
-import my.diploma.demo.service.UserService;
+import my.diploma.demo.service.AccountService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
@@ -36,14 +35,14 @@ public class ChatBot extends TelegramLongPollingBot {
     @Value("${bot.token}")
     private String botToken;
 
-    private final BookkeeperService bookkeeperService;
     private final UserService userService;
+    private final AccountService accountService;
     private final TitleService titleService;
     private final MyTransactionService myTransactionService;
 
-    public ChatBot(BookkeeperService bookkeeperService, UserService userService, TitleService titleService,MyTransactionService myTransactionService) {
-        this.bookkeeperService = bookkeeperService;
+    public ChatBot(UserService userService, AccountService accountService, TitleService titleService, MyTransactionService myTransactionService) {
         this.userService = userService;
+        this.accountService = accountService;
         this.titleService = titleService;
         this.myTransactionService = myTransactionService;
     }
@@ -66,35 +65,35 @@ public class ChatBot extends TelegramLongPollingBot {
         final String text = update.getMessage().getText();
         final long chatId = update.getMessage().getChatId();
 
-        Bookkeeper bookkeeper  = bookkeeperService.findByChatId(chatId);
+        User user = userService.findByChatId(chatId);
 
-        if (checkIfCommand(bookkeeper, text))
+        if (checkIfCommand(user, text))
             return;
 
         BotContext context;
         BotState state;
 
-        if (bookkeeper == null) {
+        if (user == null) {
             state = BotState.getInitialState();
 
-            bookkeeper = new Bookkeeper(chatId, state.ordinal());
-            bookkeeperService.addBookkeeper(bookkeeper);
+            user = new User(chatId, state.ordinal());
+            userService.addUser(user);
 
-            context = BotContext.of(this, bookkeeper, text);
+            context = BotContext.of(this, user, text);
             state.enter(context);
 
             LOGGER.info("NEW user register:" + chatId);
         } else {
-            context = BotContext.of(this, bookkeeper, text);
-            state = BotState.byId(bookkeeper.getStateId());
+            context = BotContext.of(this, user, text);
+            state = BotState.byId(user.getStateId());
 
             LOGGER.info("UPDATE" + state);
         }
 
         if (state.equals(state.byId(1))) {
             String login = context.getInput();
-            if (userService.existsByLogin(login) == true) {
-                bookkeeper.setUser(userService.findByLogin(login));
+            if (accountService.existsByLogin(login) == true) {
+                user.setAccount(accountService.findByLogin(login));
             } else {
                 sendMessage(chatId, "Wrong Login");
                 return;
@@ -102,23 +101,23 @@ public class ChatBot extends TelegramLongPollingBot {
         }
 
         if (state.equals(state.byId(2))) {
-            if (bookkeeperService.existsByTelegramTokenAndUser(context.getInput(),bookkeeper.getUser()) == true) {
-                Bookkeeper bookkeeper1 = bookkeeperService.findByTelegramToken(context.getInput());
-                List<MyTransaction> myTransactionList = myTransactionService.getAllTransactionByBookkeeper(bookkeeper1);
+            if (userService.existsByTelegramTokenAndAccount(context.getInput(), user.getAccount()) == true) {
+                User user1 = userService.findByTelegramToken(context.getInput());
+                List<MyTransaction> myTransactionList = myTransactionService.getAllTransactionByUser(user1);
 
                 for(MyTransaction transaction : myTransactionList){
-                    bookkeeperService.deleteMyTransaction(transaction,bookkeeper1);
+                    userService.deleteMyTransaction(transaction, user1);
                     myTransactionService.deleteTransaction(transaction.getId());
                 }
                 for(MyTransaction transaction :myTransactionList){
-                   transaction.setBookkeeper(bookkeeper);
-                    bookkeeperService.addMyTransaction(transaction,bookkeeper);
+                   transaction.setUser(user);
+                    userService.addMyTransaction(transaction, user);
                 }
 
-                bookkeeper.setRequisite(bookkeeper1.getRequisite());
-                bookkeeper.setTelegramToken(context.getInput());
+                user.setRequisite(user1.getRequisite());
+                user.setTelegramToken(context.getInput());
 
-                bookkeeperService.deleteBookkeeperById(bookkeeper1.getId());
+                userService.deleteUserById(user1.getId());
 
                 sendMessage(chatId, "ALL RIGHT!");
             } else {
@@ -149,15 +148,15 @@ public class ChatBot extends TelegramLongPollingBot {
 
             try {
                 MyTransaction myTransaction = new MyTransaction(title, date, transaction.get(0), Double.valueOf(transaction.get(1)));
-                bookkeeper.addTransaction(myTransaction);
+                user.addTransaction(myTransaction);
             } catch (NumberFormatException ex) {
                 sendMessage(chatId, "WRONG PARAMETERS");
                 return;
             }
 
             Title title1 = new Title(title);
-            title1.setUser(bookkeeper.getUser());
-            if (titleService.existsByNameAndUser(title1.getName(), bookkeeper.getUser().getId()) == false) {
+            title1.setAccount(user.getAccount());
+            if (titleService.existsByNameAndAccount(title1.getName(), user.getAccount().getId()) == false) {
                 titleService.addTitle(title1);
             }
         }
@@ -169,9 +168,9 @@ public class ChatBot extends TelegramLongPollingBot {
             state.enter(context);
         } while (!state.isInputNeeded());
 
-        bookkeeper.setStateId(state.ordinal());
-        bookkeeperService.updateBookkeeper(bookkeeper);
-        userService.refresh(bookkeeper.getUser().getLogin());
+        user.setStateId(state.ordinal());
+        userService.updateUser(user);
+        accountService.refresh(user.getAccount().getLogin());
     }
 
     private void sendMessage(long chatId, String text) {
@@ -185,22 +184,22 @@ public class ChatBot extends TelegramLongPollingBot {
         }
     }
 
-    private boolean checkIfCommand(Bookkeeper bookkeeper, String text) {
-        if(bookkeeper == null)
+    private boolean checkIfCommand(User user, String text) {
+        if(user == null)
             return  false;
 
         if(text.startsWith(RESTART)){
             LOGGER.info("Restart...");
-            restart(bookkeeper);
+            restart(user);
             return  true;
         }
         return false;
     }
 
-    private void restart(Bookkeeper bookkeeper){
-        bookkeeper.setChatId((long)(Math.random()*1000000000 - 1000000000));
-        bookkeeper.setStateId(0);
-        bookkeeperService.updateBookkeeper(bookkeeper);
+    private void restart(User user){
+        user.setChatId((long)(Math.random()*1000000000 - 1000000000));
+        user.setStateId(0);
+        userService.updateUser(user);
     }
 
 }

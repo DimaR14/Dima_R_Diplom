@@ -22,8 +22,8 @@ public class MyTransaction {
     private double sum;
 
     @ManyToOne
-    @JoinColumn(name = "bookkeeper_id")
-    private Bookkeeper bookkeeper;
+    @JoinColumn(name = "user_id")
+    private User user;
 
     public MyTransaction(){}
 
@@ -74,11 +74,11 @@ public class MyTransaction {
         this.date = date;
     }
 
-    public Bookkeeper getBookkeeper() {
-        return bookkeeper;
+    public User getUser() {
+        return user;
     }
 
-    public void setBookkeeper(Bookkeeper bookkeeper) {
-        this.bookkeeper = bookkeeper;
+    public void setUser(User user) {
+        this.user = user;
     }
 }

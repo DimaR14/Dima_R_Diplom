@@ -12,10 +12,10 @@ public interface TitleRepository  extends JpaRepository<Title, Long> {
     Title findByName(@Param("name") String name);
 
     @Query("SELECT CASE WHEN COUNT(t) > 0 THEN true ELSE false " +
-            "END FROM Title t WHERE t.name = :name AND t.user.id = :user_id")
-    boolean existsByNameAndUser(@Param("name") String name,
-                                @Param("user_id") long user_id);
+            "END FROM Title t WHERE t.name = :name AND t.account.id = :account_id")
+    boolean existsByNameAndAccount(@Param("name") String name,
+                                @Param("account_id") long account_id);
 
-    @Query("SELECT t FROM Title t WHERE t.user.id = :user_id")
-    List<Title> getAllByUser(@Param("user_id") long user_id);
+    @Query("SELECT t FROM Title t WHERE t.account.id = :account_id")
+    List<Title> getAllByAccount(@Param("account_id") long account_id);
 }
